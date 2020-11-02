@@ -1,0 +1,75 @@
+use Books
+db.createCollection("books")
+db.books.save({_id:1,Category:"Machine Learning",Bookname:"Machine learning for Hackers",Author:"Dreq Conway",qty:25,price:500,rol:30,pages:350})
+db.books.save({_id:2,Category:"Bussiness intelligence",Bookname:"Fundamentals of Bussiness Analytics",Author:"Seema Acharya",qty:55,price:500,rol:30,pages:250})
+db.books.save({_id:3,Category:"Analytics",Bookname:"Competing on Analytics",Author:"Thomas Davenport",qty:8,price:150,rol:20,pages:150})
+db.books.save({_id:4,Category:"Visualization",Bookname:"Visualizing data",Author:"Ben Fry",qty:12,price:325,rol:6,pages:450})
+db.books.save({_id:5,Category:"Web Mining",Bookname:"Learning R",Author:"Richard",qty:10,price:850,rol:10,pages:120})
+db.books.mapReduce(function() {let key = null, value = null;
+if(this.pages >= 300){
+key = "Big books";
+value = this.pages;
+}
+else{
+key = "Small books";
+value = this.pages;
+}
+emit(key, value);
+},
+function(key, values){
+return values.length;
+},
+{
+out: "Book_Sizes"
+}
+);
+db.Book_Sizes.find()
+
+
+
+
+
+
+use Areas
+db.createCollection("Country")
+db.Country.insert({_id:1,Cities:["Visakhapatnam","Hyderabad"]})
+db.Country.insert({_id:2,Cities:["Pune","Mumbai"]})
+
+db.Country.insert({_id:3,Cities:["Bangalore","Chennai"]})
+db.Country.insert({_id:4,Cities:["Mysore","Tirupathi"]})
+
+
+db.Country.find()
+db.Country.find().limit(1)
+db.Country.find().skip(2).limit(2)
+
+
+db.Country.update({_id:1},{$push:{population:{Visakhapatnam:45,Hyderabad:50}}})
+db.Country.find()
+
+
+db.Country.update({_id:3},{$pop:{Cities:1}})
+
+db.Country.find()
+
+
+db.Country.update({Cities:"Pune"},{$pull:{Cities:'Pune'}})
+
+db.Country.find()
+db.Country.update({_id:1},{$set:{'Cities.2':'Srinagar'}})
+
+db.Country.find()
+
+
+db.Country.update({_id:2},{$addToSet:{Cities:"Jaipur"}})
+
+db.Country.find()
+
+
+
+
+mongoimport -d mongoDB -c MongoDBHandsOn --type csv --headerline --file "bank-data.csv"
+use mongoDB
+ 
+db.MongoDBHandsOn.aggregate([{$group:{_id:null,sum:{$sum:"$children"}}}])
+db.MongoDBHandsOn.aggregate([{$group:{_id:"Avg of Age",avg:{$avg:"$age"}}}])
