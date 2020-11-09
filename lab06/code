@@ -1,0 +1,75 @@
+CREATE KEYSPACE Employee WITH REPLICATION = {'class':'SimpleStrategy','replication_factor':1};
+
+
+
+CREATE TABLE Employee_Info (Emp_Id int PRIMARY KEY, Emp_Name text,Designation text, DateOfJoining timestamp, Salary double,Dept_Name text);
+
+
+BEGIN BATCH
+INSERT INTO Employee_Info(Emp_Id , Emp_Name ,Designation , DateOfJoining ,Salary ,Dept_Name) VALUES(117,'Sharan','Software Developer','2020-10-19',60000,'Development')
+INSERT INTO Employee_Info(Emp_Id , Emp_Name ,Designation , DateOfJoining ,Salary ,Dept_Name) VALUES(118,'Varun Kumar','Software Developer in Test','2020-01-15',55000,'Testing')
+INSERT INTO Employee_Info(Emp_Id , Emp_Name ,Designation , DateOfJoining ,Salary ,Dept_Name) VALUES(119,'Abhishek Kumar','Operations Lead','2018-04-17',90000,'Operations')
+INSERT INTO Employee_Info(Emp_Id , Emp_Name ,Designation , DateOfJoining ,Salary ,Dept_Name) VALUES(120,'Aditya Kapoor','New Talent Recruiter','2019-02-03',65000,'Recruitment')
+INSERT INTO Employee_Info(Emp_Id , Emp_Name ,Designation , DateOfJoining ,Salary ,Dept_Name) VALUES(121,'Ranveer Singh','HR','2019-12-23',62000,'HR')
+APPLY BATCH;
+
+UPDATE Employee_Info SET Emp_Name = 'Virat Sharma' , Dept_Name='Sales' WHERE Emp_Id=121;
+
+ALTER TABLE Employee.Employee_Info ADD Projects set<text>;
+
+UPDATE Employee_Info SET Projects = Projects + {'Libaray Management System'} WHERE Emp_Id = 117;
+UPDATE Employee_Info SET Projects = Projects + {'Student Info Management System'} WHERE Emp_Id = 118;
+UPDATE Employee_Info SET Projects = Projects + {'Student Info Management System'} WHERE Emp_Id = 118;
+UPDATE Employee_Info SET Projects = Projects + {'Stock Management'} WHERE Emp_Id = 119;
+UPDATE Employee_Info SET Projects = Projects + {'Project Management System'} WHERE Emp_Id = 121;
+
+INSERT INTO Employee_Info(Emp_Id , Emp_Name ,Designation , DateOfJoining ,Salary ,Dept_Name) VALUES(122,'Abhijeet Kohli','Software Developer','2020-10-19',60000,'Development') USING TTL 15;
+SELECT TTL(Designation) FROM employee_Info where Emp_id=122;
+
+CREATE KEYSPACE Library WITH REPLICATION = {'class':'SimpleStrategy','replication_factor':1};
+
+
+DESCRIBE KEYSPACES;
+
+
+USE Library;
+
+
+CREATE TABLE Library_Info (Stud_id int,Counter_value counter, Stud_Name text,Book_Name text,Book_Id int,Doi timestamp,PRIMARY KEY(Stud_id,Stud_Name,Book_Name,Book_id,doi));
+
+DESCRIBE TABLES;
+
+DESCRIBE TABLE Library_Info;
+
+
+
+
+UPDATE Library_Info SET Counter_value = Counter_value+1 WHERE Stud_id=111 and Stud_Name='Sharan' AND Book_Name='DSR' and Book_id=131 and Doi='2020-11-05' ;
+UPDATE Library_Info SET Counter_value = Counter_value+1 WHERE Stud_id=113 and Stud_Name='Ajay' AND Book_Name='BDA' and Book_id=121 and Doi='2020-11-05' ;
+UPDATE Library_Info SET Counter_value = Counter_value+1 WHERE Stud_id=112 and Stud_Name='Shree' AND Book_Name='BDA' and Book_id=122 and Doi='2020-10-05' ;
+UPDATE Library_Info SET Counter_value = Counter_value+1 WHERE Stud_id=114 and Stud_Name='Sushma' AND Book_Name='SQM' and Book_id=141 and Doi='2020-11-03' ;
+UPDATE Library_Info SET Counter_value = Counter_value+1 WHERE Stud_id=115 and Stud_Name='Suvedha' AND Book_Name='DSR' and Book_id=132 and Doi='2020-11-04' ;
+
+
+SELECT * FROM  Library_Info;
+
+
+UPDATE Library_Info SET Counter_value = Counter_value+1 WHERE Stud_id=112 and Stud_Name='Shree' AND Book_Name='BDA' and Book_id=122 and Doi='2020-10-05' ;
+
+ 
+select Book_name,Counter_value from Library_Info where Stud_id=112;
+
+
+
+COPY Library_Info(Stud_id,Counter_value,Stud_Name,Book_Name,Book_id,doi) TO '.\libraryInfo.csv';
+
+Starting copy of library.library_info with columns [stud_id, counter_value, stud_name, book_name, book_id, doi].
+Processed: 5 rows; Rate:       5 rows/s; Avg. rate:       1 rows/s
+5 rows exported to 1 files in 4.851 seconds.
+
+
+COPY Library_Info(Stud_id,Counter_value,Stud_Name,Book_Name,Book_id,doi) FROM '.\libraryInfo.csv';
+
+cqlsh:library> SELECT * FROM  Library_Info;
+
+
